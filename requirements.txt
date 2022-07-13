@@ -11,6 +11,6 @@ Jinja2==3.1.2
 MarkupSafe==2.1.1
 pycparser==2.21
 PyJWT==2.4.0
-mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority
+pymongo==4.1.1
 Werkzeug==2.1.2
 zipp==3.8.0
