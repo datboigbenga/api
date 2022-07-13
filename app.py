@@ -1,8 +1,6 @@
 from encodings import utf_8
 import json
 from turtle import update
-# from re import template
-# from tkinter.tix import Form
 import uuid
 import jwt
 import pymongo
@@ -23,7 +21,7 @@ try:
     #     # port=27017, 
     #     serverSelectionTimeoutMS= 1000)
 
-    myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority",serverSelectionTimeoutMS= 1000)
+    myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority",serverSelectionTimeoutMS= 3000)
     db = myclient.test
     # db = myclient
     print(myclient.list_database_names())
