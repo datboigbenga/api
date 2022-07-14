@@ -3,8 +3,8 @@ import json
 from turtle import update
 import uuid
 import jwt
-import tkinter as TK
-import _tkinter
+# import tkinter as TK
+# import _tkinter
 import pymongo
 from flask import Flask, request, jsonify, Response
 import uuid
