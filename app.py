@@ -56,6 +56,11 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorate
+
+@app.route('/')
+def index():
+    # A welcome message to test our server
+    return "<h1>Test server!</h1>"
     
 @app.route('/register', methods=['POST'])
 def register_user():
@@ -212,7 +217,7 @@ def temp_del(current_user, template_id):
         print("unable to delete")
         return jsonify({"message":"unable to delete"})
 
-    return ""
+#     return ""
 
 if __name__ == '__main__':
     app.run()
