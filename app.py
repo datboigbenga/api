@@ -3,8 +3,7 @@ import json
 from turtle import update
 import uuid
 import jwt
-# import tkinter as TK
-# import _tkinter
+import os
 import pymongo
 from flask import Flask, request, jsonify, Response
 import uuid
@@ -222,7 +221,11 @@ def temp_del(current_user, template_id):
 
 #     return ""
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()
 #     app.run(debug= True)
     # app.run(port=8000, debug=True)
+    
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
