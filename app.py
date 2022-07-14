@@ -215,5 +215,6 @@ def temp_del(current_user, template_id):
     return ""
 
 if __name__ == '__main__':
-    app.run(debug= True)
+    app.run()
+#     app.run(debug= True)
     # app.run(port=8000, debug=True)
