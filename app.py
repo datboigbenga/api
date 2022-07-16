@@ -1,19 +1,14 @@
 from encodings import utf_8
 import json
-from turtle import update
 import uuid
 import jwt
-import os
 import pymongo
 from flask import Flask, request, jsonify, Response
-import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from functools import wraps
 from bson.objectid import ObjectId
-from turtle import update
-import tkinter as TK
-import _tkinter
+
 
 
 app = Flask(__name__)
@@ -21,19 +16,19 @@ app.config['SECRET_KEY'] = "gbenga"
 try:
     # myclient = pymongo.MongoClient(
     #     host="mongodb+srv://gbenga1998:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority",
-    #     # host="localhost", 
-    #     # port=27017, 
+    #     # host="localhost",
+    #     # port=27017,
     #     serverSelectionTimeoutMS= 1000)
 
-    myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority",serverSelectionTimeoutMS= 3000)
+    myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS= 1000)
     db = myclient.test
     # db = myclient
     print(myclient.list_database_names())
     myclient.server_info()
-    
+
     # mydb = myclient.flask_db
     # todos = mydb.todos
-    # print(myclient.list_database_names())
+    print(myclient.list_database_names())
 except Exception as Ex:
     print(Ex)
     print("Error detected, Server cannot connect to db")
@@ -63,7 +58,7 @@ def token_required(f):
 def index():
     # A welcome message to test our server
     return "<h1>Test server!</h1>"
-    
+
 @app.route('/register', methods=['POST'])
 def register_user():
     try:
@@ -82,17 +77,17 @@ def register_user():
         # print(data)
         #     jsonify({"data"})
         # print(dbResponse)
-        # return jsonify({"message":"user created"})
-        return Response(
-            response=json.dumps({"message":"user created"}),
-            status= 200,
-            mimetype= "application/json"
-        )
-        
+        return jsonify({"message":"user created"})
+        # return Response(
+        #     response=json.dumps({"message":"user created"}),
+        #     status= 200,
+        #     mimetype= "application/json"
+        # )
+
     except Exception as Ex:
         print("error")
         print(Ex)
-    # return "he"
+
 
 @app.route('/login', methods=['POST'])
 def login_user():
@@ -171,11 +166,11 @@ def temp_get_one_temp(current_user, template_id):
             temp['_id'] = str(temp['_id'])
         # return json.dumps({'template':temps})
         return jsonify({'template':temps})
-            
+
     except Exception as Ex:
         print(Ex)
         return jsonify({'message':'template not retrieved'})
-   
+
 
 
 @app.route('/template/<template_id>', methods=['PUT'])
@@ -185,7 +180,7 @@ def temp_update(current_user, template_id):
         updater = request.get_json()
         query = {"_id":ObjectId(template_id)}
         # Update_query = {"$set": {"template_name":request.form['template_name'], "subject":request.form['subject'], "body":request.form['body']}}
-        print(updater)
+        # print(updater)
         Update_query = {"$set": updater}
         dbResponse = db.templates.update_one(query, Update_query)
         # dbResponse = db.templates.find_one_and_update(query, Update_query)
@@ -193,7 +188,7 @@ def temp_update(current_user, template_id):
 
         if dbResponse.modified_count == 1:
             return jsonify({"message":"template updated"})
-        
+
         return jsonify({"message":"nothing to update"})
     except Exception as Ex:
         print(Ex)
@@ -211,7 +206,7 @@ def temp_del(current_user, template_id):
         dbResponse = db.templates.delete_one(query)
         if dbResponse.deleted_count == 1:
             return jsonify({"message":"template deleted", "id":template_id})
-        
+
         return jsonify({"message":"nothing to delete"})
 
     except Exception as Ex:
@@ -219,13 +214,11 @@ def temp_del(current_user, template_id):
         print("unable to delete")
         return jsonify({"message":"unable to delete"})
 
-#     return ""
+    # return ""
 
-# if __name__ == '__main__':
-#     app.run()
-#     app.run(debug= True)
+if __name__ == '__main__':
+    app.run(port=5007, debug= True)
     # app.run(port=8000, debug=True)
-    
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 5000))
+#     app.run(host='0.0.0.0', port=port)
