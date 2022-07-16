@@ -13,13 +13,9 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "gbenga"
-try:
-    # myclient = pymongo.MongoClient(
-    #     host="mongodb+srv://gbenga1998:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority",
-    #     # host="localhost",
-    #     # port=27017,
-    #     serverSelectionTimeoutMS= 1000)
 
+# database 
+try:
     myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS= 1000)
     db = myclient.test
     # db = myclient
@@ -28,11 +24,13 @@ try:
 
     # mydb = myclient.flask_db
     # todos = mydb.todos
-    print(myclient.list_database_names())
+#     print(myclient.list_database_names())
 except Exception as Ex:
     print(Ex)
     print("Error detected, Server cannot connect to db")
-
+    
+    
+# jwt token defined make use of x-access-token in header
 def token_required(f):
     @wraps(f)
     def decorate(*args, **kwargs):
@@ -54,11 +52,14 @@ def token_required(f):
 
     return decorate
 
+# A welcome message to test our server
 @app.route('/')
 def index():
     # A welcome message to test our server
     return "<h1>Test server!</h1>"
 
+
+# register api
 @app.route('/register', methods=['POST'])
 def register_user():
     try:
@@ -88,7 +89,7 @@ def register_user():
         print("error")
         print(Ex)
 
-
+# login api
 @app.route('/login', methods=['POST'])
 def login_user():
     try:
@@ -120,6 +121,7 @@ def login_user():
 
     # return ""
 
+#     post template api
 @app.route('/template', methods=['POST'])
 @token_required
 def temp(current_user):
@@ -133,6 +135,7 @@ def temp(current_user):
         return jsonify({'message':'template not added'})
 
 
+#     get all templates
 @app.route('/template', methods=['GET'])
 @token_required
 def temp_get_all(current_user):
@@ -151,7 +154,7 @@ def temp_get_all(current_user):
         return jsonify({'message':'templates not retrieved'})
     # return ""
 
-
+# get a template
 @app.route('/template/<template_id>', methods=['GET'])
 @token_required
 def temp_get_one_temp(current_user, template_id):
@@ -172,7 +175,7 @@ def temp_get_one_temp(current_user, template_id):
         return jsonify({'message':'template not retrieved'})
 
 
-
+# update a template
 @app.route('/template/<template_id>', methods=['PUT'])
 @token_required
 def temp_update(current_user, template_id):
@@ -197,7 +200,8 @@ def temp_update(current_user, template_id):
 
 
     # return template_id
-
+    
+# delete template
 @app.route('/template/<template_id>', methods=['DELETE'])
 @token_required
 def temp_del(current_user, template_id):
@@ -218,7 +222,4 @@ def temp_del(current_user, template_id):
 
 if __name__ == '__main__':
     app.run(debug= True)
-    # app.run(port=8000, debug=True)
-# if __name__ == "__main__":
-#     port = int(os.environ.get("PORT", 5000))
-#     app.run(host='0.0.0.0', port=port)
+
