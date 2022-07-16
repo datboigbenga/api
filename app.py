@@ -14,23 +14,23 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "gbenga"
 
-# database 
+#database configuration
 try:
-    myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS= 1000)
+    myclient = pymongo.MongoClient("mongodb+srv://gbenga:gbenga@cluster0.bdkpoct.mongodb.net/?retryWrites=true&w=majority",serverSelectionTimeoutMS= 1000)
     db = myclient.test
     # db = myclient
-    print(myclient.list_database_names())
+    # print(myclient.list_database_names())
     myclient.server_info()
-
+    
     # mydb = myclient.flask_db
     # todos = mydb.todos
-#     print(myclient.list_database_names())
+    # print(myclient.list_database_names())
 except Exception as Ex:
     print(Ex)
     print("Error detected, Server cannot connect to db")
-    
-    
-# jwt token defined make use of x-access-token in header
+
+
+#token setup
 def token_required(f):
     @wraps(f)
     def decorate(*args, **kwargs):
@@ -52,6 +52,7 @@ def token_required(f):
 
     return decorate
 
+
 # A welcome message to test our server
 @app.route('/')
 def index():
@@ -59,7 +60,7 @@ def index():
     return "<h1>Test server!</h1>"
 
 
-# register api
+#  register a user    
 @app.route('/register', methods=['POST'])
 def register_user():
     try:
@@ -78,26 +79,33 @@ def register_user():
         # print(data)
         #     jsonify({"data"})
         # print(dbResponse)
-        return jsonify({"message":"user created"})
-        # return Response(
-        #     response=json.dumps({"message":"user created"}),
-        #     status= 200,
-        #     mimetype= "application/json"
-        # )
-
+        # return jsonify({"message":"user created"})
+        return Response(
+            response=json.dumps({"message":"user created"}),
+            status= 200,
+            mimetype= "application/json"
+        )
+        
     except Exception as Ex:
         print("error")
         print(Ex)
+    # return "he"
 
-# login api
+# login to user
 @app.route('/login', methods=['POST'])
 def login_user():
     try:
-        auth = request.authorization
+        # auth = request.authorization
+        auth = request.get_json()
+
         print(auth)
-        if not auth or not auth.username or not auth.password:
+        # if not auth or not auth.username or not auth.password:
+        if not auth or not auth["email"] or not auth["password"]:
+
             return Response("could not verify", 401, {'www-authenticate': 'Basic-realm="login required"'})
-        query1 = {"email":auth.username}
+        # query1 = {"email":auth.username}
+        query1 = {"email":auth["email"]}
+ 
         user = db.users.find(query1)
         # if not user:
         #     return jsonify({"message":"error"})
@@ -107,7 +115,9 @@ def login_user():
             print(user_det)
             if not user_det:
                 return Response("could not verify", 401, {'www-authenticate': 'Basic-realm="login required"'})
-            if check_password_hash(user_det['password'], auth.password):
+            # if check_password_hash(user_det['password'], auth.password):
+            if check_password_hash(user_det['password'], auth["password"]):
+
                 token = jwt.encode({'public_id':user_det['public_id'],  'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
                 # token_d = token.decode("UTF-8")
                 return jsonify({'token': token})
@@ -121,7 +131,8 @@ def login_user():
 
     # return ""
 
-#     post template api
+
+#create template
 @app.route('/template', methods=['POST'])
 @token_required
 def temp(current_user):
@@ -135,7 +146,7 @@ def temp(current_user):
         return jsonify({'message':'template not added'})
 
 
-#     get all templates
+#get templates
 @app.route('/template', methods=['GET'])
 @token_required
 def temp_get_all(current_user):
@@ -154,7 +165,7 @@ def temp_get_all(current_user):
         return jsonify({'message':'templates not retrieved'})
     # return ""
 
-# get a template
+#get a template
 @app.route('/template/<template_id>', methods=['GET'])
 @token_required
 def temp_get_one_temp(current_user, template_id):
@@ -169,13 +180,13 @@ def temp_get_one_temp(current_user, template_id):
             temp['_id'] = str(temp['_id'])
         # return json.dumps({'template':temps})
         return jsonify({'template':temps})
-
+            
     except Exception as Ex:
         print(Ex)
         return jsonify({'message':'template not retrieved'})
+   
 
-
-# update a template
+#update a template
 @app.route('/template/<template_id>', methods=['PUT'])
 @token_required
 def temp_update(current_user, template_id):
@@ -191,7 +202,7 @@ def temp_update(current_user, template_id):
 
         if dbResponse.modified_count == 1:
             return jsonify({"message":"template updated"})
-
+        
         return jsonify({"message":"nothing to update"})
     except Exception as Ex:
         print(Ex)
@@ -200,8 +211,9 @@ def temp_update(current_user, template_id):
 
 
     # return template_id
-    
-# delete template
+
+
+#delete a template
 @app.route('/template/<template_id>', methods=['DELETE'])
 @token_required
 def temp_del(current_user, template_id):
@@ -210,7 +222,7 @@ def temp_del(current_user, template_id):
         dbResponse = db.templates.delete_one(query)
         if dbResponse.deleted_count == 1:
             return jsonify({"message":"template deleted", "id":template_id})
-
+        
         return jsonify({"message":"nothing to delete"})
 
     except Exception as Ex:
@@ -222,4 +234,3 @@ def temp_del(current_user, template_id):
 
 if __name__ == '__main__':
     app.run(debug= True)
-
